@@ -148,24 +148,25 @@ function App() {
     setValue(newValue);
   };
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  
+  useEffect(() => {
+    getHistorial().catch(null);
+  }, []);
 
   const classes = useStyles();
-    const ObtenerNoticias = async () => {
-    const data_hist = await axios.get("ConsultaHistorial");
-    setHistorial(data_hist);
-  };
+    
 
   //consultar a la api las noticias y estado del tiempo de dicha ciudad
   const ConsultarNotEst = (event) => {
     event.preventDefault();
     //console.log(nombciudad);
-    getCiudadNombre(nombciudad);
+    getCiudadNombre(nombciudad);   
+    a11yProps(0);     
   };
+
+  const HistoriaList = (evento) => {
+    evento.preventDefault();
+    getHistorial();
+  }
 
   async function getCiudadNombre(nombciud) {
     await axios
@@ -187,7 +188,7 @@ function App() {
 
   async function getHistorial() {
     await axios
-      .get(`ConsultaHistorial/`, {
+      .get('Historials', {
         headers: {
           "Content-Type": "application/xml;charset=UTF-8",
         },
@@ -277,7 +278,9 @@ function App() {
             >
               <Tab label="NOTICIAS" {...a11yProps(0)} />
               <Tab label="ESTADO DEL TIEMPO" {...a11yProps(1)} />
-              <Tab label="HISTORIAL" {...a11yProps(2)} />
+              <Tab label="HISTORIAL" {...a11yProps(2)} onClick={(e) => {
+                      HistoriaList(e);
+                    }} />
             </Tabs>
           </AppBar>
           {/* contenido de noticias */}
@@ -330,7 +333,7 @@ function App() {
             <Grid item xs={12} sm={12} md={12}>              
               <List className={classes.root}>
                 <ListItem>
-                  <ListItemText primary={weathers.name} secondary={" Humedad: " + weathers.main?.humidity} />
+                  <ListItemText primary={weathers.name} secondary={weathers.main?.humidity && " Humedad: " + weathers.main?.humidity} />
                   <InvertColorsIcon />
                 </ListItem>
                 <Divider component="li" />
@@ -345,7 +348,7 @@ function App() {
                   </Typography>
                 </li>
                 <ListItem>
-                  <ListItemText primary="Viento" secondary={"Presion: "+weathers.main?.pressure+"hPa"} />                  
+                  <ListItemText primary={weathers.main?.humidity && "Viento"} secondary={weathers.main?.pressure && "Presion: "+weathers.main?.pressure+"hPa"} />                  
                   <CloudQueueRoundedIcon />
                 </ListItem>
                 <Divider component="li" variant="inset" />
@@ -364,35 +367,27 @@ function App() {
                       <Brightness5RoundedIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Temperatura" secondary={Temperatura(weathers.main?.temp)} />
+                  <ListItemText primary={weathers.main?.temp && "Temperatura"} secondary={weathers.main?.temp && Temperatura(weathers.main?.temp)} />
                 </ListItem>
               </List>
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <h4 align="center">HISTORIAL DE BUSQUEDAS</h4>
+            <h4 align="center">HISTORIAL DE BUSQUEDAS</h4>            
             <Timeline>
-              <TimelineItem>
+            {historial &&
+                historial.map((valh, j) => {
+                  return (
+              <TimelineItem key={j}>
                 <TimelineSeparator>
                   <TimelineDot />
                   <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent>Eat</TimelineContent>
+                <TimelineContent>{valh.nombciudad}</TimelineContent>
               </TimelineItem>
-              <TimelineItem>
-                <TimelineSeparator>
-                  <TimelineDot />
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>Code</TimelineContent>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineSeparator>
-                  <TimelineDot />
-                </TimelineSeparator>
-                <TimelineContent>Sleep</TimelineContent>
-              </TimelineItem>
-            </Timeline>
+                  );
+                })}             
+            </Timeline>                 
           </TabPanel>
         </Container>
       </main>
