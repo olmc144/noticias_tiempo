@@ -139,6 +139,7 @@ function App() {
   const [value, setValue] = React.useState(0);
 
   const [nombciudad, setNombciudad] = useState("");
+  const [estadobusq, setEstadobusq] = useState("");
 
   const [noticias, setNoticias] = React.useState([]);
   const [weathers, setWeathers] = React.useState([]);
@@ -179,10 +180,14 @@ function App() {
         // console.log(['Mostrando response de obtener avance del curso'], response.data.data);
         setNoticias(response.data.news);
         setWeathers(response.data.current_weather);
-        //console.log(noticias.articles);
+        setEstadobusq("");
+        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
+        setEstadobusq(1);
+        setNoticias([]);
+        setWeathers([]);
       });
   }
 
@@ -234,8 +239,7 @@ function App() {
               color="textSecondary"
               paragraph
             >
-              Puedes consultar noticias y estado del tiempo ingresando la ciudad
-              la cual deseas estar informado.
+              Puedes consultar noticias y estado del tiempo ingresando el nombre de la ciudad.
             </Typography>
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
@@ -285,7 +289,8 @@ function App() {
           </AppBar>
           {/* contenido de noticias */}
           <TabPanel value={value} index={0}>
-            <Grid container spacing={2}>
+          {estadobusq == 1 && <h2 align="center">NO SE ENCONTRARON DATOS</h2> }
+            <Grid container spacing={2}>              
               {noticias.articles &&
                 noticias.articles.map((valn, i) => {
                   {
@@ -328,7 +333,7 @@ function App() {
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            
+          {estadobusq == 1 && <h2 align="center">NO SE ENCONTRARON DATOS</h2> }
             <h4 align="center">ESTADO DEL TIEMPO: {weathers.name?.toUpperCase()}</h4>
             <Grid item xs={12} sm={12} md={12}>              
               <List className={classes.root}>
